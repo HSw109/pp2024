@@ -1,11 +1,11 @@
 import numpy as np
-import math
-import curses
+
 class Student:
     def __init__(self, student_id, name, dob):
         self.student_id = student_id
         self.name = name
         self.dob = dob
+        self.mark = None
 
 class Course:
     def __init__(self, course_id, name):
@@ -45,11 +45,13 @@ class SchoolSystem:
 
     def select_course(self):
         course_id = input("Enter course id: ")
+        student_id = input("Enter student id for input course: ")
         if course_id in self.courses:
-            mark = math.floor(int(input("Enter course mark: ")))
-            
+            mark = np.floor(int(input("Enter course mark: ")))
+
             self.courses[course_id].mark = mark
-            print(f"You selected {self.courses[course_id].name} with mark {mark}")
+            self.students[student_id].mark = mark
+            print(f"You selected {self.courses[course_id].name} with mark {mark} for {self.students[student_id].name}")
         else:
             print("Course not found")
 
@@ -67,13 +69,36 @@ class SchoolSystem:
         course_id = input("Enter course id: ")
         if course_id in self.courses and self.courses[course_id].mark is not None:
             print(f"Mark for {self.courses[course_id].name}: {self.courses[course_id].mark}")
+            print("Student Marks:")
+            for student_id, student in self.students.items():
+                if student.mark is not None and student.mark == self.courses[course_id].mark:
+                    print(f"ID: {student_id}, Name: {student.name}, Mark: {student.mark}")
         else:
             print("Course not found or mark not available")
 
-    def calAverage(self):
-        print("Calculating marks: ")
-        for _ in self.
+    def calculate_average_gpa(self, student_id):
+        if student_id in self.students:
+            marks = [course.mark for course in self.students[student_id].mark]
+            gpa = np.mean(marks)
+            print(f"Average GPA for {self.students[student_id].name}: {gpa}")
+        else:
+            print("Student not found")
 
+    def calculate_weighted_sum(self, student_id):
+        if student_id in self.students:
+            marks = [course.mark for course in self.students[student_id].mark]
+            credits = [course.credits for course in self.students[student_id].mark]
+            weighted_sum = np.sum(np.multiply(marks, credits))
+            print(f"Weighted Sum of Credits and Marks for {self.students[student_id].name}: {weighted_sum}")
+        else:
+            print("Student not found")
+
+    def sort_students_by_gpa(self):
+        student_list = list(self.students.values())
+        sorted_students = sorted(student_list, key=lambda x: np.mean([course.mark for course in x.mark]), reverse=True)
+        print("Sorted Students by GPA (descending):")
+        for student in sorted_students:
+            print(f"ID: {student.student_id}, Name: {student.name}, GPA: {np.mean([course.mark for course in student.mark])}")
 
 # Main
 if __name__ == "__main__":
@@ -88,7 +113,10 @@ if __name__ == "__main__":
         print("6. List courses")
         print("7. List students")
         print("8. Show student mark for given course")
-        print("9. Exit")
+        print("9. Calculate average GPA for a student")
+        print("10. Calculate weighted sum of credits and marks for a student")
+        print("11. Sort students by GPA")
+        print("12. Exit")
 
         option = input("Type a number option: ")
 
@@ -119,8 +147,14 @@ if __name__ == "__main__":
         elif option == 8:
             school_system.print_course_mark()
         elif option == 9:
+            student_id = input("Enter student id: ")
+            school_system.calculate_average_gpa(student_id)
+        elif option == 10:
+            student_id = input("Enter student id: ")
+            school_system.calculate_weighted_sum(student_id)
+        elif option == 11:
+            school_system.sort_students_by_gpa()
+        elif option == 12:
             break
         else:
             print("Invalid, please choose appropriate option")
-
-

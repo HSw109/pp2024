@@ -3,6 +3,7 @@ class Student:
         self.student_id = student_id
         self.name = name
         self.dob = dob
+        self.mark = None
 
 class Course:
     def __init__(self, course_id, name):
@@ -42,10 +43,13 @@ class SchoolSystem:
 
     def select_course(self):
         course_id = input("Enter course id: ")
+        student_id =  input("Enter student id for input course: ")
         if course_id in self.courses:
             mark = int(input("Enter course mark: "))
+
             self.courses[course_id].mark = mark
-            print(f"You selected {self.courses[course_id].name} with mark {mark}")
+            self.students[student_id].mark = mark
+            print(f"You selected {self.courses[course_id].name} with mark {mark} for {self.students[student_id].name}")
         else:
             print("Course not found")
 
@@ -63,8 +67,13 @@ class SchoolSystem:
         course_id = input("Enter course id: ")
         if course_id in self.courses and self.courses[course_id].mark is not None:
             print(f"Mark for {self.courses[course_id].name}: {self.courses[course_id].mark}")
+            print("Student Marks:")
+            for student_id, student in self.students.items():
+                if student.mark is not None and student.mark == self.courses[course_id].mark:
+                    print(f"ID: {student_id}, Name: {student.name}, Mark: {student.mark}")
         else:
             print("Course not found or mark not available")
+
 
 # Main
 if __name__ == "__main__":
