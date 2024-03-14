@@ -1,3 +1,6 @@
+import os
+import gzip
+import pickle  # For serializing/deserializing Python objects
 from input import SchoolSystemInput
 from domains.student import Student
 from domains.course import Course
@@ -42,9 +45,31 @@ class SchoolSystem:
         for student in sorted_students:
             print(f"ID: {student.student_id}, Name: {student.name}, GPA: {np.mean(list(student.course_marks.values())):.1f}")
 
+def compress_files():
+    files_to_compress = ["input.py", "domains", "main.py"]  # Add more files/directories if needed
+    with gzip.open("students.dat", "wb") as f_out:
+        for file_name in files_to_compress:
+            with open(file_name, "rb") as f_in:
+                f_out.write(f_in.read())
+
+def decompress_files():
+    with gzip.open("students.dat", "rb") as f_in:
+        with open("temp_decompressed_files", "wb") as f_out:
+            f_out.write(f_in.read())
+
+def load_data():
+    with open("temp_decompressed_files/input.py", "rb") as f:
+        exec(f.read())
+    with open("temp_decompressed_files/main.py", "rb") as f:
+        exec(f.read())
 
 if __name__ == "__main__":
+    if os.path.exists("students.dat"):
+        decompress_files()
+        load_data()
+
     school_system = SchoolSystem()
+
     while True:
         print("1. Input number of students")
         print("2. Input id, name, DoB of student")
@@ -96,4 +121,5 @@ if __name__ == "__main__":
         elif option == 11:
             school_system.sort_students_by_gpa()
         elif option == 12:
+            compress_files()  # Compress files before closing
             break
